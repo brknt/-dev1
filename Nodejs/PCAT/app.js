@@ -1,19 +1,57 @@
 const express = require('express');
-const path = require('path');
+const mongoose = require('mongoose');
+const Photo = require('./models/Photo');
+
 
 const app = express();
 
 
+// DB connect:
+mongoose.connect('mongodb://localhost/pcat-test-db',{
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
 
+
+//TEMPLATE ENGINE
+app.set('view engine','ejs');
+
+
+
+
+// MIDDLEWARE
 app.use(express.static('public'));
+app.use(express.urlencoded({extended :true})); // urldeki datayı okumamızı sağlıyo
+app.use(express.json()); // urldeki datayı json formatta okuyo
 
-app.get('/', (req, res) => {
-  res.sendFile(path.resolve(__dirname,'temp/index.html'));
+
+
+
+// ROUTES
+app.get('/', async (req, res) => {
+  const photos = await Photo.find({});
+  res.render('index',{
+    photos
+  });
+});
+
+app.get('/about', (req, res) => {
+  res.render('about');
+});
+
+app.get('/add', (req, res) => {
+  res.render('add');
+  
+});
+
+app.post('/photos', async (req, res) => {
+  await Photo.create(req.body);
+  res.redirect('/');  
 });
 
 
 
 const port = 3000; 
 app.listen(port, () => {
-  console.log(`Server ${port} başlatıldı.`);
+  console.log(`Server ${port} portunda başlatıldı.`);
 });
