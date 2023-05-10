@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+
 const Photo = require('./models/Photo');
 
 
@@ -33,6 +34,17 @@ app.get('/', async (req, res) => {
   res.render('index',{
     photos
   });
+});
+
+app.get('/photos/:id', async (req, res) => {
+  
+  const photo = await Photo.findById(req.params.id);
+  console.log(photo);
+  
+  res.render('photo', {
+    photo
+  });
+  
 });
 
 app.get('/about', (req, res) => {
