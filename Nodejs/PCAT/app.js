@@ -8,58 +8,53 @@ const ejs = require('ejs');
 // core module
 //const fs = require('fs');
 
-//own 
+//own
 const Photo = require('./models/Photo');
 const photoController = require('./controllers/photoController');
 const pageController = require('./controllers/pageController');
 
-
 const app = express();
 
-
 // DB connect:
-mongoose.connect('mongodb://localhost/pcat-test-db', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+mongoose
+  .connect('mongodb+srv://brknt:WkyFifXqksOhqTDB@cluster0.pgzfyem.mongodb.net/', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log('DB CONNECTED!');
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 
 //TEMPLATE ENGINE
 app.set('view engine', 'ejs');
-
-
-
 
 // MIDDLEWARE
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true })); // urldeki datayı okumamızı sağlıyo
 app.use(express.json()); // urldeki datayı json formatta okuyo
 app.use(fileUpload());
-app.use(methodOverride('_method',{
-  methods:["POST","GET"]
-}));
-
-
+app.use(
+  methodOverride('_method', {
+    methods: ['POST', 'GET'],
+  })
+);
 
 // ROUTES
-app.get('/',photoController.getAllPhoto);
+app.get('/', photoController.getAllPhoto);
 app.get('/photos/:id', photoController.getPhoto);
 app.post('/photos', photoController.createPhoto);
 app.put('/photos/:id', photoController.updatePhoto);
-app.delete('/photos/:id',photoController.deletePhoto);
+app.delete('/photos/:id', photoController.deletePhoto);
 
-
-
-app.get('/about',pageController.getAboutPage);
+app.get('/about', pageController.getAboutPage);
 app.get('/add', pageController.getAddPage);
 app.get('/photos/edit/:id', pageController.getEditPage);
 
-
-
-
-
-
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server ${port} portunda başlatıldı.`);
 });
